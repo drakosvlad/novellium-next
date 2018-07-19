@@ -39,6 +39,13 @@ export default {
     this.canvas = document.getElementById('plotCanvas')
     this.canvas.width = window.innerWidth
     this.canvas.height = window.innerHeight
+
+    window.addEventListener('resize', function (e) {
+      this.canvas.width = window.innerWidth
+      this.canvas.height = window.innerHeight
+      this.renderCanvas()
+    }.bind(this), false)
+
     this.ctx = this.canvas.getContext('2d')
     this.localRoot = new PlotNode(100, 100, 'Kek', 'Mdems', '#ff0000')
 
