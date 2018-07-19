@@ -1,6 +1,6 @@
 <template>
     <div>
-        <canvas id="plotCanvas"></canvas>
+        <canvas id="plotCanvas" v-on:mousedown="initDrag" v-on:mousemove="canvasMouseMove" v-on:mouseup="canvasMouseUp"></canvas>
     </div>
 </template>
 
@@ -16,8 +16,10 @@ export default {
     data: function () {
         return {
             state: "idle",
+            drag: undefined,
             scale: 100,
             scroll: new Vector2(0, 0),
+            canvas: undefined,
             ctx: undefined,
             localRoot: undefined,
             themes: [
@@ -29,14 +31,15 @@ export default {
                     nodeText: "#333333"
                 }
             ],
-            selectedTheme: 0
+            selectedTheme: 0,
+            localNodes: []
         };
     },
     mounted: function() {
-        let canvas = document.getElementById("plotCanvas");
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        this.ctx = canvas.getContext("2d");
+        this.canvas = document.getElementById("plotCanvas");
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+        this.ctx = this.canvas.getContext("2d");
         this.localRoot = new PlotNode(100, 100, "Kek", "Mdems", "#ff0000");
 
         this.renderCanvas();
@@ -49,6 +52,7 @@ export default {
             this.renderNode(this.localRoot);
         },
         renderNode: function(node) {
+            this.localNodes.push(node);
             let canvasCoords = node.location.multiplyScalar(this.scale / 100).substract(this.scroll);
             
             this.ctx.fillStyle = this.themes[this.selectedTheme].nodeBackground;
@@ -67,8 +71,39 @@ export default {
             this.ctx.font = '17px sans-serif';
             this.ctx.fillText(node.text, textCoords.x, textCoords.y);
         },
-        renderArrow: function(nodeFrom, nodeTo, outputIndex) {
+        renderArrow: function (nodeFrom, nodeTo, outputIndex) {
 
+        },
+        initDrag: function (e) {
+            // TODO - split node sizes into separate const
+            let clickCoord = this.coordsToCanvas(e.clientX, e.clientY).add(this.scroll);
+            
+            for(let i in this.localNodes) {
+                let node = this.localNodes[i];
+                let nodeCoords = node.location.multiplyScalar(this.scale / 100).substract(this.scroll);
+                let diff = clickCoord.substract(nodeCoords);
+
+                if(diff.x >= 0 && diff.x <= 200 * this.scale / 100 && diff.y >= 0 && diff.y <= 15 * this.scale / 100) {
+                    this.drag = { node: node, diff: diff };
+                    this.state = "dragging";
+                }
+            }
+        },
+        canvasMouseMove: function (e) {
+            if(this.state == "dragging") {
+                let clickCoord = this.coordsToCanvas(e.clientX, e.clientY).add(this.scroll).substract(this.drag.diff);
+                this.drag.node.location = clickCoord;
+                this.renderCanvas();
+            }
+        },
+        canvasMouseUp: function (e) {
+            this.state = "idle";
+            this.drag = undefined;
+        },
+        coordsToCanvas: function (x, y) {
+            let bbox = this.canvas.getBoundingClientRect();
+            return new Vector2(x - bbox.left * (this.canvas.width  / bbox.width), 
+                                    y - bbox.top  * (this.canvas.height / bbox.height));
         }
     }
 }
