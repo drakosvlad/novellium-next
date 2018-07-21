@@ -13,6 +13,17 @@ class PlotNode {
     this.children = []
     this.outputs = 0
   }
+
+  setOutputs (n) {
+    let newChildren = []
+
+    for (let i = 0; i < Math.min(this.outputs, n); i++) {
+      newChildren.push(this.children[i])
+    }
+
+    this.children = newChildren
+    this.outputs = n
+  }
 }
 
 export default PlotNode
