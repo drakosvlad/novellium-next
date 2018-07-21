@@ -1,9 +1,7 @@
 <template>
   <div id="app">
     <div class="r1">
-      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
-        Launch demo modal
-      </button>
+      <top-bar></top-bar>
     </div>
     <table cellspacing="0">
       <tr class="r2">
@@ -13,7 +11,7 @@
         </td>
       </tr>
       <tr class="r3">
-        <td class></td>
+        <td class id="status">Ready</td>
         <td class></td>
       </tr>
     </table>
@@ -21,14 +19,14 @@
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
 import PlotCanvas from './components/PlotCanvas.vue'
+import TopBar from './components/TopBar.vue'
 
 export default {
   name: 'app',
   components: {
-    HelloWorld,
-    PlotCanvas
+    PlotCanvas,
+    TopBar
   }
 }
 </script>
@@ -81,6 +79,11 @@ table {
 .r3 {
   height: 30px;
   background: #00a74b;
+  color: white;
+}
+
+#status {
+  padding-left: 10px;
 }
 
 </style>

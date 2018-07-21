@@ -49,7 +49,8 @@ export default {
         titlePosition: new Vector2(5, 37),
         textPosition: new Vector2(5, 58),
         fontSize: 17
-      }
+      },
+      ctrlPressed: false
     }
   },
   mounted: function () {
@@ -63,6 +64,14 @@ export default {
       this.renderCanvas()
     }.bind(this), false)
 
+    window.addEventListener('keydown', function (e) {
+      this.ctrlPressed = e.ctrlKey
+    }.bind(this))
+
+    window.addEventListener('keyup', function (e) {
+      this.ctrlPressed = false
+    }.bind(this))
+
     this.ctx = this.canvas.getContext('2d')
     this.localRoot = new PlotNode(100, 100, 'Kek', 'Mdems', '#ff0000')
     this.localRoot.setOutputs(2)
@@ -74,8 +83,12 @@ export default {
   },
   methods: {
     scrollCanvas: function (e) {
-      this.scroll.x -= e.deltaX
-      this.scroll.y -= e.deltaY
+      if (!this.ctrlPressed) {
+        this.scroll.x -= e.deltaX
+        this.scroll.y -= e.deltaY
+      } else {
+        this.scale -= e.deltaY * this.scale / 100
+      }
       this.renderCanvas()
     },
     renderCanvas: function () {
