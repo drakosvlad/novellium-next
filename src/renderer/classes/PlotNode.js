@@ -9,7 +9,7 @@ class PlotNode {
     this.title = title
     this.color = color
 
-    this.parents = []
+    this.parents = 0
     this.children = []
     this.outputs = 0
   }
