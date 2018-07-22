@@ -1,32 +1,44 @@
 <template>
   <div id="app">
-    <div class="r1">
-      <top-bar></top-bar>
+    <new-project v-if="dialog === 'new'"/>
+    <div id="veil" v-if="dialog !== 'none'"></div>
+    <div v-bind:class="blurclass">
+      <div class="r1">
+        <top-bar></top-bar>
+      </div>
+      <table cellspacing="0">
+        <tr class="r2">
+          <td class="col1"></td>
+          <td class="col2">
+          <PlotCanvas id="canvas"/>
+          </td>
+        </tr>
+        <tr class="r3">
+          <td class id="status">Ready</td>
+          <td class></td>
+        </tr>
+      </table>
     </div>
-    <table cellspacing="0">
-      <tr class="r2">
-        <td class="col1"></td>
-        <td class="col2">
-        <PlotCanvas id="canvas"/>
-        </td>
-      </tr>
-      <tr class="r3">
-        <td class id="status">Ready</td>
-        <td class></td>
-      </tr>
-    </table>
   </div>
 </template>
 
 <script>
 import PlotCanvas from './components/PlotCanvas.vue'
 import TopBar from './components/TopBar.vue'
+import NewProject from './components/dialogs/NewProject.vue'
 
 export default {
   name: 'app',
   components: {
     PlotCanvas,
-    TopBar
+    TopBar,
+    NewProject
+  },
+  data: function () {
+    return {
+      dialog: 'new',
+      blurclass: 'blur'
+    }
   }
 }
 </script>
@@ -43,6 +55,20 @@ export default {
   height: 100vh;
   width: 100vw;
   background: #edfff5;
+}
+
+#veil {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  height: 100vh;
+  width: 100vw;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 10;
+}
+
+.blur {
+  filter: blur(5px);
 }
 
 #canvas {
@@ -84,6 +110,22 @@ table {
 
 #status {
   padding-left: 10px;
+}
+
+.form-input {
+  border-radius: 3px;
+  border: solid 1px #c5c5c5;
+  font-size: 14pt;
+  padding: 5px;
+}
+
+.form-button {
+  border-radius: 5px;
+  border: none;
+  font-size: 14pt;
+  padding: 10px 15px 10px 15px;
+  background: #00a74b;
+  color: white;
 }
 
 </style>
