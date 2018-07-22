@@ -1,6 +1,6 @@
 <template>
     <div class="toolbar">
-        <icons-bar v-for="toolbar in toolbars" v-bind:bg="toolbar.bg" v-bind:icons="toolbar.icons" :key="toolbar.bg"></icons-bar>
+        <icons-bar v-for="toolbar in toolbars" v-bind:bg="toolbar.bg" v-bind:buttons="toolbar.buttons" :key="toolbar.name"></icons-bar>
     </div>
 </template>
 
@@ -17,9 +17,19 @@ export default {
       toolbars: [
         {
           bg: '#007d1d',
-          icons: [
-            '/static/icons/newfile.png',
-            '/static/icons/open.png'
+          name: 'file',
+          buttons: [
+            { icon: '/static/icons/newfile.png', event: 'newproject' },
+            { icon: '/static/icons/open.png', event: 'openproject' },
+            { icon: '/static/icons/save.png', event: 'saveproject' }
+          ]
+        },
+        {
+          bg: '#007d1d',
+          name: 'nodes',
+          buttons: [
+            { icon: '/static/icons/newnode.png', event: 'newnode' },
+            { icon: '/static/icons/delnode.png', event: 'delnode' }
           ]
         }
       ]
@@ -29,5 +39,8 @@ export default {
 </script>
 
 <style>
-
+.toolbar {
+  display: flex;
+  background: #007d1d;
+}
 </style>

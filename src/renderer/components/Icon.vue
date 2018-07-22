@@ -8,7 +8,8 @@
 export default {
   name: 'Icon',
   props: {
-    picture: String
+    picture: String,
+    event: String
   }
 }
 </script>
@@ -24,5 +25,11 @@ export default {
 
 img {
   height: 70%;
+  width: auto;
+  filter: invert();
+}
+
+.toolbtn:hover {
+  background: rgba(255, 255, 255, 0.25);
 }
 </style>
