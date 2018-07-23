@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <new-project v-if="dialog === 'new'" v-on:cancel="hideDialogs"/>
+    <project-setup v-if="dialog === 'project-setup'" />
     <div id="veil" v-if="dialog !== 'none'" v-on:click="hideDialogs"></div>
     <div v-bind:class="blurclass">
       <div class="r1">
@@ -23,21 +24,27 @@
 </template>
 
 <script>
+// import Project from './classes/Project.js'
+
 import PlotCanvas from './components/PlotCanvas.vue'
 import TopBar from './components/TopBar.vue'
+
 import NewProject from './components/dialogs/NewProject.vue'
+import ProjectSetup from './components/dialogs/ProjectSetup.vue'
 
 export default {
   name: 'app',
   components: {
     PlotCanvas,
     TopBar,
-    NewProject
+    NewProject,
+    ProjectSetup
   },
   data: function () {
     return {
-      dialog: 'none',
-      blurclass: ''
+      dialog: 'project-setup',
+      blurclass: '',
+      project: undefined
     }
   },
   methods: {
@@ -145,11 +152,36 @@ table {
   background: white;
 }
 
+.form-button-small {
+  border-radius: 5px;
+  border: 1px solid #aaaaaa;
+  font-size: 14pt;
+  padding: 5px 15px 5px 15px;
+  color: #333333;
+  background: white;
+}
+
 .form-button-main {
   background: #00a74b;
   padding: 10px 15px 10px 15px;
   color: white;
   border: none
+}
+
+.form-button-small-main {
+  background: #00a74b;
+  padding: 6px 15px 6px 15px;
+  color: white;
+  border: none
+}
+
+.form-button-ultrasmall {
+  border-radius: 5px;
+  color: #333333;
+  background: white;
+  padding: 4px;
+  border: 1px solid #aaaaaa;
+  font-weight: bold;
 }
 
 .form-button-main:disabled {
