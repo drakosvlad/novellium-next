@@ -1,5 +1,5 @@
 <template>
-  <button class="toolbtn">
+  <button class="toolbtn" v-on:click="fire">
     <img v-bind:src="picture" />
   </button>
 </template>
@@ -10,6 +10,11 @@ export default {
   props: {
     picture: String,
     event: String
+  },
+  methods: {
+    fire: function (e) {
+      this.$emit('btnclick', this.event)
+    }
   }
 }
 </script>

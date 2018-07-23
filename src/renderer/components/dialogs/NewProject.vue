@@ -5,18 +5,35 @@
     <input type="text" id="nameInput" class="form-input" v-model="projectName" />
     <p><strong>Workspace directory: </strong>{{ workspaceDirectory }}<a href="#">(change)</a></p>
     <div id="bottomDiv">
-      <p>Your project will be created under <strong>{{ workspaceDirectory + projectName }}</strong> directory</p>
-      <button id="createButton" class="form-button">Create project</button>
+      <p v-if="checkName">Your project will be created under <strong>{{ workspaceDirectory + projectName }}</strong> directory</p>
+      <p v-if="!checkName">Invalid name</p>
+      <button id="createButton" class="form-button form-button-main" :disabled="!checkName">Create project</button>
+      <button id="cancelButton" class="form-button" v-on:click="cancel">Cancel</button>
     </div>
   </div>
 </template>
 
 <script>
+
 export default {
+  mounted: function () {
+    let app = require('electron').remote.app
+    this.workspaceDirectory = app.getPath('documents') + '/'
+  },
   data: function () {
     return {
       projectName: '',
-      workspaceDirectory: '/home/'
+      workspaceDirectory: ''
+    }
+  },
+  computed: {
+    checkName: function () {
+      return (this.projectName !== '')
+    }
+  },
+  methods: {
+    cancel: function () {
+      this.$emit('cancel')
     }
   }
 }
@@ -38,9 +55,10 @@ export default {
   padding-left: 20px;
 }
 
-#createButton {
+button {
   float: right;
   margin-top: 5px;
+  margin-left: 5px;
 }
 
 h2 {

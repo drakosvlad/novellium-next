@@ -1,10 +1,10 @@
 <template>
   <div id="app">
-    <new-project v-if="dialog === 'new'"/>
-    <div id="veil" v-if="dialog !== 'none'"></div>
+    <new-project v-if="dialog === 'new'" v-on:cancel="hideDialogs"/>
+    <div id="veil" v-if="dialog !== 'none'" v-on:click="hideDialogs"></div>
     <div v-bind:class="blurclass">
       <div class="r1">
-        <top-bar></top-bar>
+        <top-bar v-on:btnclick="toolbarClick"></top-bar>
       </div>
       <table cellspacing="0">
         <tr class="r2">
@@ -36,8 +36,25 @@ export default {
   },
   data: function () {
     return {
-      dialog: 'new',
-      blurclass: 'blur'
+      dialog: 'none',
+      blurclass: ''
+    }
+  },
+  methods: {
+    toolbarClick: function (e) {
+      switch (e) {
+        case 'newproject':
+          this.showDialog('new')
+          break
+      }
+    },
+    showDialog: function (dialog) {
+      this.blurclass = 'blur'
+      this.dialog = dialog
+    },
+    hideDialogs: function () {
+      this.blurclass = ''
+      this.dialog = 'none'
     }
   }
 }
@@ -121,11 +138,22 @@ table {
 
 .form-button {
   border-radius: 5px;
-  border: none;
+  border: 1px solid #aaaaaa;
   font-size: 14pt;
-  padding: 10px 15px 10px 15px;
+  padding: 9px 15px 9px 15px;
+  color: #333333;
+  background: white;
+}
+
+.form-button-main {
   background: #00a74b;
+  padding: 10px 15px 10px 15px;
   color: white;
+  border: none
+}
+
+.form-button-main:disabled {
+  background: #34c576;
 }
 
 </style>

@@ -1,6 +1,6 @@
 <template>
     <div class="toolbar">
-        <icons-bar v-for="toolbar in toolbars" v-bind:bg="toolbar.bg" v-bind:buttons="toolbar.buttons" :key="toolbar.name"></icons-bar>
+        <icons-bar v-for="toolbar in toolbars" v-bind:bg="toolbar.bg" v-bind:buttons="toolbar.buttons" :key="toolbar.name" v-on:btnclick="fire"></icons-bar>
     </div>
 </template>
 
@@ -33,6 +33,11 @@ export default {
           ]
         }
       ]
+    }
+  },
+  methods: {
+    fire: function (e) {
+      this.$emit('btnclick', e)
     }
   }
 }

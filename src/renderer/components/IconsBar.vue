@@ -1,6 +1,6 @@
 <template>
   <div id="iconsbar" v-bind:style="{background: bg}">
-    <icon v-for="button in buttons" v-bind:picture="button.icon" v-bind:key="button.event" v-bind:event="button.event"></icon>
+    <icon v-for="button in buttons" v-bind:picture="button.icon" v-bind:key="button.event" v-bind:event="button.event" v-on:btnclick="fire"></icon>
     <div class="delimiter"></div>
   </div>
 </template>
@@ -16,6 +16,11 @@ export default {
   props: {
     bg: String,
     buttons: Array
+  },
+  methods: {
+    fire: function (e) {
+      this.$emit('btnclick', e)
+    }
   }
 }
 </script>
