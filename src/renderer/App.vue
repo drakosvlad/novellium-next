@@ -1,8 +1,8 @@
 <template>
   <div id="app">
-    <new-project v-if="dialog === 'new'" v-on:cancel="hideDialogs"/>
-    <project-setup v-if="dialog === 'project-setup'" />
-    <div id="veil" v-if="dialog !== 'none'" v-on:click="hideDialogs"></div>
+    <new-project v-if="dialog === 'new'" v-on:cancel="hideDialogs" v-on:done="newProjectPathSelected"/>
+    <project-setup v-if="dialog === 'project-setup'" v-on:done="newProjectConfigured"/>
+    <div id="veil" v-if="dialog !== 'none'" v-on:click="hideDialogsUser"></div>
     <div v-bind:class="blurclass">
       <div class="r1">
         <top-bar v-on:btnclick="toolbarClick"></top-bar>
@@ -11,11 +11,11 @@
         <tr class="r2">
           <td class="col1"></td>
           <td class="col2">
-          <PlotCanvas id="canvas"/>
+          <PlotCanvas id="canvas" :plot="project.plot"/>
           </td>
         </tr>
         <tr class="r3">
-          <td class id="status">Ready</td>
+          <td class id="status">{{ status }}</td>
           <td class></td>
         </tr>
       </table>
@@ -24,7 +24,10 @@
 </template>
 
 <script>
-// import Project from './classes/Project.js'
+import fs from 'fs'
+
+import Project from './classes/Project.js'
+import PlotNode from './classes/PlotNode.js'
 
 import PlotCanvas from './components/PlotCanvas.vue'
 import TopBar from './components/TopBar.vue'
@@ -42,17 +45,34 @@ export default {
   },
   data: function () {
     return {
-      dialog: 'project-setup',
+      status: 'Ready',
+      dialog: 'none',
       blurclass: '',
-      project: undefined
+      project: new Project()
     }
   },
   methods: {
+    writeProject: function () {
+      this.status = 'Writing project...'
+      if (!fs.existsSync(this.project.path)) {
+        fs.mkdirSync(this.project.path)
+      }
+      fs.writeFile(this.project.path + 'project.nov', JSON.stringify(this.project), (error) => {
+        if (error) {
+          alert(error)
+          this.status = 'Error writing project'
+        } else {
+          this.status = 'Ready'
+        }
+      })
+    },
     toolbarClick: function (e) {
       switch (e) {
         case 'newproject':
           this.showDialog('new')
           break
+        case 'saveproject':
+          this.writeProject()
       }
     },
     showDialog: function (dialog) {
@@ -62,6 +82,31 @@ export default {
     hideDialogs: function () {
       this.blurclass = ''
       this.dialog = 'none'
+    },
+    hideDialogsUser: function () {
+      if (this.dialog !== 'project-setup') {
+        this.hideDialogs()
+      }
+    },
+    newProjectPathSelected: function (data) {
+      this.project = new Project(data.name, data.directory + data.name + '/')
+      this.showDialog('project-setup')
+    },
+    newProjectConfigured: function (data) {
+      this.hideDialogs()
+      this.project.languages = data.languages
+      this.project.content = []
+      this.project.phrases = []
+
+      let rootNode = new PlotNode(100, 100, 'Root', 'Novel starts here', '#db9600')
+      rootNode.setOutputs(1)
+
+      this.project.plot = {
+        root: rootNode,
+        orphanedNodes: []
+      }
+
+      this.writeProject()
     }
   }
 }

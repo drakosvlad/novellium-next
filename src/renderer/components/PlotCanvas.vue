@@ -5,13 +5,12 @@
 </template>
 
 <script>
-import PlotNode from '../classes/PlotNode.js'
 import Vector2 from '../classes/Vector2.js'
 
 export default {
   name: 'PlotCanvas',
   props: {
-    root: PlotNode
+    plot: undefined
   },
   data: function () {
     return {
@@ -21,7 +20,6 @@ export default {
       scroll: new Vector2(0, 0),
       canvas: undefined,
       ctx: undefined,
-      localRoot: undefined,
       orphanedNodes: [],
       themes: [
         {
@@ -53,6 +51,11 @@ export default {
       ctrlPressed: false
     }
   },
+  watch: {
+    plot: function () {
+      this.renderCanvas()
+    }
+  },
   mounted: function () {
     this.canvas = document.getElementById('plotCanvas')
     this.canvas.width = window.innerWidth - 300
@@ -73,11 +76,6 @@ export default {
     }.bind(this))
 
     this.ctx = this.canvas.getContext('2d')
-    this.localRoot = new PlotNode(100, 100, 'Kek', 'Mdems', '#ff0000')
-    this.localRoot.setOutputs(2)
-    let childNode = new PlotNode(300, 300, 'Kek', 'Mdems', '#00aa00')
-    childNode.parents = 1
-    this.localRoot.children = [childNode, undefined]
 
     this.renderCanvas()
   },
@@ -95,8 +93,17 @@ export default {
       this.ctx.fillStyle = this.themes[this.selectedTheme].background
       this.ctx.fillRect(0, 0, window.innerWidth, window.innerHeight)
 
-      this.renderNode(this.localRoot)
-      this.orphanedNodes.forEach(node => this.renderNode(node))
+      if (this.plot !== undefined) {
+        this.renderNode(this.plot.root)
+        this.orphanedNodes.forEach(node => this.renderNode(node))
+      } else {
+        this.ctx.fillStyle = '#333333'
+        this.ctx.fillRect(0, 0, window.innerWidth, window.innerHeight)
+
+        this.ctx.fillStyle = '#ffffff'
+        this.ctx.font = '50px sans-serif'
+        this.ctx.fillText('No plot to display', 50, 100)
+      }
     },
     renderNode: function (node) {
       this.localNodes.push(node)

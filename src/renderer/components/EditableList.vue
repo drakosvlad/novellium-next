@@ -20,10 +20,15 @@ export default {
       if (this.current !== '') {
         this.values.push(this.current)
         this.current = ''
+        this.updateModel()
       }
     },
-    removeItem (index) {
+    removeItem: function (index) {
       this.values.splice(index, 1)
+      this.updateModel()
+    },
+    updateModel: function () {
+      this.$emit('input', this.values)
     }
   }
 }

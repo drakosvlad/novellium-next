@@ -2,7 +2,11 @@
   <div id="dialogBody">
     <h2>Project setup</h2>
     <p><strong>Novel languages:</strong></p>
-    <editable-list />
+    <editable-list v-model="languages" />
+    <div id="bottomDiv">
+      <p v-if="!check">You need at least one language</p>
+      <button id="createButton" class="form-button form-button-main bottombutton" v-on:click="done" :disabled="!check">Done</button>
+    </div>
   </div>
 </template>
 
@@ -21,17 +25,23 @@ export default {
   data: function () {
     return {
       projectName: '',
-      workspaceDirectory: ''
+      workspaceDirectory: '',
+      languages: []
     }
   },
   computed: {
-    checkName: function () {
-      return (this.projectName !== '')
+    check: function () {
+      return (this.languages.length > 0)
     }
   },
   methods: {
     cancel: function () {
       this.$emit('cancel')
+    },
+    done: function () {
+      this.$emit('done', {
+        languages: this.languages
+      })
     }
   }
 }
@@ -53,5 +63,20 @@ export default {
   padding-left: 20px;
 }
 
+.bottombutton {
+  float: right;
+  margin-top: 5px;
+  margin-left: 5px;
+}
+
+h2 {
+  margin-left: 5px;
+}
+
+#bottomDiv {
+  position: absolute;
+  bottom: 15px;
+  width: calc(100% - 35px);
+}
 
 </style>

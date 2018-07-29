@@ -7,7 +7,7 @@
     <div id="bottomDiv">
       <p v-if="checkName">Your project will be created under <strong>{{ workspaceDirectory + projectName }}</strong> directory</p>
       <p v-if="!checkName">Invalid name</p>
-      <button id="createButton" class="form-button form-button-main" :disabled="!checkName">Create project</button>
+      <button id="createButton" class="form-button form-button-main" v-on:click="pathSelected" :disabled="!checkName">Create project</button>
       <button id="cancelButton" class="form-button" v-on:click="cancel">Cancel</button>
     </div>
   </div>
@@ -34,6 +34,12 @@ export default {
   methods: {
     cancel: function () {
       this.$emit('cancel')
+    },
+    pathSelected: function () {
+      this.$emit('done', {
+        name: this.projectName,
+        directory: this.workspaceDirectory
+      })
     }
   }
 }
