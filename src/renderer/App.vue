@@ -15,7 +15,7 @@
           </td>
         </tr>
         <tr class="r3">
-          <td class id="status">{{ status }}</td>
+          <td class id="status">{{ status || 'Ready' }}</td>
           <td class></td>
         </tr>
       </table>
@@ -24,16 +24,19 @@
 </template>
 
 <script>
-import fs from 'fs'
-
 import Project from './classes/Project.js'
 import PlotNode from './classes/PlotNode.js'
+import Vector2 from './classes/Vector2.js'
 
 import PlotCanvas from './components/PlotCanvas.vue'
 import TopBar from './components/TopBar.vue'
 
 import NewProject from './components/dialogs/NewProject.vue'
 import ProjectSetup from './components/dialogs/ProjectSetup.vue'
+
+import fs from 'fs'
+import { clearTimeout, setTimeout } from 'timers'
+const {dialog} = require('electron').remote
 
 export default {
   name: 'app',
@@ -45,26 +48,79 @@ export default {
   },
   data: function () {
     return {
-      status: 'Ready',
+      status: undefined,
+      statusTimeoutHandler: undefined,
       dialog: 'none',
       blurclass: '',
       project: new Project()
     }
   },
   methods: {
+    statusMessage: function (msg, duration) {
+      if (this.statusTimeoutHandler !== undefined) {
+        clearTimeout(this.statusTimeoutHandler)
+      }
+
+      if (duration === 0) {
+        this.statusTimeoutHandler = undefined
+      } else {
+        this.statusTimeoutHandler = setTimeout(function () {
+          this.status = undefined
+          this.statusTimeoutHandler = undefined
+        }.bind(this), duration * 1000)
+      }
+
+      this.status = msg
+    },
     writeProject: function () {
-      this.status = 'Writing project...'
+      this.statusMessage('Writing project...', 0)
       if (!fs.existsSync(this.project.path)) {
         fs.mkdirSync(this.project.path)
       }
       fs.writeFile(this.project.path + 'project.nov', JSON.stringify(this.project), (error) => {
         if (error) {
-          alert(error)
-          this.status = 'Error writing project'
+          this.statusMessage('Error writing project', 10)
         } else {
-          this.status = 'Ready'
+          this.statusMessage('Saved successfully', 5)
         }
       })
+    },
+    readProject: function (filename) {
+      this.statusMessage('Reading project...')
+      fs.readFile(filename, 'utf8', function (err, data) {
+        if (err) {
+          this.statusMessage('Could not read project', 10)
+        } else {
+          let tempProject = Object.assign(new Project(), JSON.parse(data))
+          this.assignProjectClasses(tempProject)
+          this.project = tempProject
+          this.statusMessage('Opened successfully', 5)
+        }
+      }.bind(this))
+    },
+    assignProjectClasses: function (project) {
+      for (let n in project.plot.orphanedNodes) {
+        project.plot.orphanedNodes[n] = Object.assign(new PlotNode(), project.plot.orphanedNodes[n])
+        this.assignNodeClasses(project.plot.orphanedNodes[n])
+      }
+      project.plot.root = Object.assign(new PlotNode(), project.plot.root)
+      this.assignNodeClasses(project.plot.root)
+    },
+    assignNodeClasses: function (node) {
+      node.location = Object.assign(new Vector2(), node.location)
+      for (let n in node.children) {
+        node.children[n] = Object.assign(new PlotNode(), node.children[n])
+        this.assignNodeClasses(node.children[n])
+      }
+    },
+    selectProject: function () {
+      dialog.showOpenDialog({
+        properties: ['openDirectory']
+      }, function (directory) {
+        if (directory !== '') {
+          this.readProject(directory + '/project.nov')
+        }
+      }.bind(this))
     },
     toolbarClick: function (e) {
       switch (e) {
@@ -73,6 +129,10 @@ export default {
           break
         case 'saveproject':
           this.writeProject()
+          break
+        case 'openproject':
+          this.selectProject()
+          break
       }
     },
     showDialog: function (dialog) {
@@ -134,15 +194,6 @@ export default {
   width: 100vw;
   background: rgba(0, 0, 0, 0.4);
   z-index: 10;
-}
-
-@keyframes image_blur {
-    0% { filter: blur(0px);}
-    20% { filter: blur(1px); }
-    40% { filter: blur(2px); }
-    60% { filter: blur(3px); }
-    80% { filter: blur(4px); }
-    100% { filter: blur(5px);}
 }
 
 @keyframes appear {
