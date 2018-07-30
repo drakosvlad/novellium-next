@@ -1,9 +1,9 @@
 <template>
   <div id="app">
-    <new-project v-if="dialog === 'new'" v-on:cancel="hideDialogs" v-on:done="newProjectPathSelected"/>
-    <project-setup v-if="dialog === 'project-setup'" v-on:done="newProjectConfigured"/>
+    <new-project class="dialog"  v-if="dialog === 'new'" v-on:cancel="hideDialogs" v-on:done="newProjectPathSelected"/>
+    <project-setup class="dialog" v-if="dialog === 'project-setup'" v-on:done="newProjectConfigured"/>
     <div id="veil" v-if="dialog !== 'none'" v-on:click="hideDialogsUser"></div>
-    <div v-bind:class="blurclass">
+    <div v-bind:class="blurclass" id="workspace">
       <div class="r1">
         <top-bar v-on:btnclick="toolbarClick"></top-bar>
       </div>
@@ -136,8 +136,30 @@ export default {
   z-index: 10;
 }
 
+@keyframes image_blur {
+    0% { filter: blur(0px);}
+    20% { filter: blur(1px); }
+    40% { filter: blur(2px); }
+    60% { filter: blur(3px); }
+    80% { filter: blur(4px); }
+    100% { filter: blur(5px);}
+}
+
+@keyframes appear {
+    0% { opacity: 0;}
+    100% { opacity: 1;}
+}
+
 .blur {
   filter: blur(5px);
+}
+
+#workspace {
+  transition: 0.2s linear all;
+}
+
+.dialog {
+  animation: appear 0.2s;
 }
 
 #canvas {
