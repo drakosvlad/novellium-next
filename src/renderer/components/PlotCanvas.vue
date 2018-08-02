@@ -59,11 +59,11 @@ export default {
   mounted: function () {
     this.canvas = document.getElementById('plotCanvas')
     this.canvas.width = window.innerWidth - 300
-    this.canvas.height = window.innerHeight - 130
+    this.canvas.height = window.innerHeight - 800
 
     window.addEventListener('resize', function (e) {
       this.canvas.width = window.innerWidth - 300
-      this.canvas.height = window.innerHeight - 130
+      this.canvas.height = window.innerHeight - 80
       this.renderCanvas()
     }.bind(this), false)
 

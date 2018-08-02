@@ -2,6 +2,7 @@
   <div id="app">
     <new-project class="dialog"  v-if="dialog === 'new'" v-on:cancel="hideDialogs" v-on:done="newProjectPathSelected"/>
     <project-setup class="dialog" v-if="dialog === 'project-setup'" v-on:done="newProjectConfigured"/>
+    <new-node class="dialog" v-if="dialog === 'new-node'" />
     <div id="veil" v-if="dialog !== 'none'" v-on:click="hideDialogsUser"></div>
     <div v-bind:class="blurclass" id="workspace">
       <div class="r1">
@@ -33,6 +34,7 @@ import TopBar from './components/TopBar.vue'
 
 import NewProject from './components/dialogs/NewProject.vue'
 import ProjectSetup from './components/dialogs/ProjectSetup.vue'
+import NewNode from './components/dialogs/NewNode.vue'
 
 import fs from 'fs'
 import { clearTimeout, setTimeout } from 'timers'
@@ -44,7 +46,8 @@ export default {
     PlotCanvas,
     TopBar,
     NewProject,
-    ProjectSetup
+    ProjectSetup,
+    NewNode
   },
   data: function () {
     return {
@@ -133,6 +136,9 @@ export default {
         case 'openproject':
           this.selectProject()
           break
+        case 'newnode':
+          this.showDialog('new-node')
+          break
       }
     },
     showDialog: function (dialog) {
@@ -209,12 +215,19 @@ export default {
   transition: 0.2s linear all;
 }
 
+.caption {
+  color: #444444;
+  margin-top: 7px;
+  font-style: italic;
+  margin-left: 5px;
+}
+
 .dialog {
   animation: appear 0.2s;
 }
 
 #canvas {
-  height: calc(100vh - 130px);
+  height: calc(100vh - 80px);
 }
 
 td {
@@ -224,24 +237,26 @@ td {
 table {
   table-layout: fixed;
   width: 100%;
-  height: calc(100vh - 100px);
+  height: calc(100vh - 50px);
 }
 
 .col1 {
   width: 300px;
+
+  box-shadow: inset -10px 0 10px -10px #444444;
 }
 
 .col2 {
   width: calc(100vw - 300px); 
-  height: calc(100vh - 130px);
+  height: calc(100vh - 80px);
 }
 
 .r1 {
-  height: 100px;
+  height: 50px;
 }
 
 .r2 {
-  height: calc(100vh - 130px);
+  height: calc(100vh - 80px);
 }
 
 .r3 {
@@ -259,6 +274,7 @@ table {
   border: solid 1px #c5c5c5;
   font-size: 14pt;
   padding: 5px;
+  background: #ffffff;
 }
 
 .form-button {
