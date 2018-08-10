@@ -6,11 +6,13 @@
 
 <script>
 import Vector2 from '../classes/Vector2.js'
+import PlotNode from '../classes/PlotNode.js'
 
 export default {
   name: 'PlotCanvas',
   props: {
-    plot: undefined
+    plot: undefined,
+    newnode: PlotNode
   },
   data: function () {
     return {
@@ -96,6 +98,15 @@ export default {
       if (this.plot !== undefined) {
         this.renderNode(this.plot.root)
         this.orphanedNodes.forEach(node => this.renderNode(node))
+
+        console.log(this.newnode)
+
+        if (this.newnode !== undefined) {
+          this.ctx.globalAlpha = 0.5
+          this.renderNode(this.newnode)
+          this.ctx.globalAlpha = 1.0
+          console.log('drawing new node')
+        }
       } else {
         this.ctx.fillStyle = '#333333'
         this.ctx.fillRect(0, 0, window.innerWidth, window.innerHeight)
@@ -205,6 +216,12 @@ export default {
         this.renderCanvas()
         this.renderArrow(outCoord, clickCoord, false)
       }
+      if (this.newnode !== undefined) {
+        let clickCoord = this.coordsToCanvas(e.clientX, e.clientY).substract(this.scroll).multiplyScalar(100 / this.scale)
+        this.newnode.location = clickCoord.add(this.scroll)
+
+        this.renderCanvas()
+      }
     },
     canvasMouseUp: function (e) {
       if (this.state === 'draggingArrow') {
@@ -226,6 +243,11 @@ export default {
         if (!nodeFound && this.drag.node.children[this.drag.output] !== undefined) {
           this.unlink(this.drag.node, this.drag.output)
         }
+      }
+
+      if (this.newnode !== undefined) {
+        this.orphanedNodes.push(this.newnode)
+        this.$emit('newnodeplaced')
       }
 
       this.state = 'idle'

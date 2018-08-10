@@ -12,7 +12,7 @@
         <tr class="r2">
           <td class="col1"></td>
           <td class="col2">
-          <PlotCanvas id="canvas" :plot="project.plot"/>
+          <PlotCanvas id="canvas" :plot="project.plot" :newnode="newnode" v-on:newnodeplaced="newNodePlaced"/>
           </td>
         </tr>
         <tr class="r3">
@@ -55,10 +55,14 @@ export default {
       statusTimeoutHandler: undefined,
       dialog: 'none',
       blurclass: '',
-      project: new Project()
+      project: new Project(),
+      newnode: new PlotNode(0, 0, 'New test node', 'Kek mda', '#ffff00')
     }
   },
   methods: {
+    newNodePlaced: function () {
+      this.newnode = undefined
+    },
     statusMessage: function (msg, duration) {
       if (this.statusTimeoutHandler !== undefined) {
         clearTimeout(this.statusTimeoutHandler)
