@@ -2,7 +2,7 @@
   <div id="app">
     <new-project class="dialog"  v-if="dialog === 'new'" v-on:cancel="hideDialogs" v-on:done="newProjectPathSelected"/>
     <project-setup class="dialog" v-if="dialog === 'project-setup'" v-on:done="newProjectConfigured"/>
-    <new-node class="dialog" v-if="dialog === 'new-node'" />
+    <new-node class="dialog" v-if="dialog === 'new-node'" v-on:done="newNodeCreated" />
     <div id="veil" v-if="dialog !== 'none'" v-on:click="hideDialogsUser"></div>
     <div v-bind:class="blurclass" id="workspace">
       <div class="r1">
@@ -12,7 +12,7 @@
         <tr class="r2">
           <td class="col1"></td>
           <td class="col2">
-          <PlotCanvas id="canvas" :plot="project.plot" :newnode="newnode" v-on:newnodeplaced="newNodePlaced"/>
+          <PlotCanvas id="canvas" :plot="project.plot" :newnode="newnode" :action="canvasAction" v-on:actionperformed="canvasActionPerformed" v-on:newnodeplaced="newNodePlaced"/>
           </td>
         </tr>
         <tr class="r3">
@@ -56,10 +56,18 @@ export default {
       dialog: 'none',
       blurclass: '',
       project: new Project(),
-      newnode: new PlotNode(0, 0, 'New test node', 'Kek mda', '#ffff00')
+      newnode: undefined,
+      canvasAction: ''
     }
   },
   methods: {
+    canvasActionPerformed: function () {
+      this.canvasAction = ''
+    },
+    newNodeCreated: function (node) {
+      this.newnode = node
+      this.hideDialogs()
+    },
     newNodePlaced: function () {
       this.newnode = undefined
     },
@@ -142,6 +150,9 @@ export default {
           break
         case 'newnode':
           this.showDialog('new-node')
+          break
+        case 'delnode':
+          this.canvasAction = 'delete'
           break
       }
     },

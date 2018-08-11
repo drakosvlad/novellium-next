@@ -10,7 +10,7 @@
     <p class="caption" v-if="type == 'container'">Node that can store a plot graph inside it</p>
 
     <p><strong>Node caption:</strong></p>
-    <input type="text" class="form-input" />
+    <input type="text" class="form-input" v-model="caption" />
     <div id="bottomDiv">
       <button id="createButton" class="form-button form-button-main bottombutton" v-on:click="done">Create</button>
     </div>
@@ -18,12 +18,14 @@
 </template>
 
 <script>
+import PlotNode from '../../classes/PlotNode'
 
 export default {
   name: 'NewNode',
   data: function () {
     return {
-      type: 'plot'
+      type: 'plot',
+      caption: ''
     }
   },
   computed: {
@@ -33,9 +35,16 @@ export default {
       this.$emit('cancel')
     },
     done: function () {
-      this.$emit('done', {
-        languages: this.languages
-      })
+      let description = ''
+      let color = '#000000'
+      if (this.type === 'plot') {
+        description = 'Plot node'
+        color = '#AAC3FF'
+      } else {
+        description = 'Container node'
+        color = '#FFAAAB'
+      }
+      this.$emit('done', new PlotNode(0, 0, this.caption, description, color))
     }
   }
 }

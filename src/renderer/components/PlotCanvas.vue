@@ -12,7 +12,8 @@ export default {
   name: 'PlotCanvas',
   props: {
     plot: undefined,
-    newnode: PlotNode
+    newnode: PlotNode,
+    action: String
   },
   data: function () {
     return {
@@ -55,6 +56,9 @@ export default {
   },
   watch: {
     plot: function () {
+      this.renderCanvas()
+    },
+    action: function () {
       this.renderCanvas()
     }
   },
@@ -99,13 +103,16 @@ export default {
         this.renderNode(this.plot.root)
         this.orphanedNodes.forEach(node => this.renderNode(node))
 
-        console.log(this.newnode)
-
         if (this.newnode !== undefined) {
           this.ctx.globalAlpha = 0.5
           this.renderNode(this.newnode)
           this.ctx.globalAlpha = 1.0
-          console.log('drawing new node')
+        }
+
+        if (this.action === 'delete') {
+          this.ctx.fillStyle = this.themes[this.selectedTheme].nodeTitle
+          this.ctx.font = '25px sans-serif'
+          this.ctx.fillText('Click on node to remove it, or right-click to cancel', 25, 50)
         }
       } else {
         this.ctx.fillStyle = '#333333'
@@ -181,7 +188,7 @@ export default {
     },
     initDrag: function (e) {
       // TODO - split node sizes into separate const
-      let clickCoord = this.coordsToCanvas(e.clientX, e.clientY).substract(this.scroll)
+      let clickCoord = this.coordsToCanvas(e.clientX, e.clientY).substract(this.scroll).multiplyScalar(100 / this.scale)
 
       for (let i in this.localNodes) {
         let node = this.localNodes[i]
@@ -250,6 +257,51 @@ export default {
         this.$emit('newnodeplaced')
       }
 
+      if (this.action === 'delete') {
+        if (e.button === 2) {
+          this.$emit('actionperformed')
+        } else if (e.button === 0) {
+          let clickCoord = this.coordsToCanvas(e.clientX, e.clientY).substract(this.scroll).multiplyScalar(100 / this.scale)
+
+          for (let i in this.localNodes) {
+            let node = this.localNodes[i]
+            let nodeCoords = node.location
+            let diff = clickCoord.substract(nodeCoords).multiplyScalar(100 / this.scale)
+
+            if (diff.x >= 0 && diff.x <= 200 && diff.y >= 0 && diff.y <= 85) {
+              node.children.forEach(function (el) {
+                this.unlink(node, el)
+              }.bind(this))
+
+              // Remove this node from everyone`s child
+              for (let i2 in this.localNodes) {
+                let node2 = this.localNodes[i2]
+                for (let c in node2.children) {
+                  if (node2.children[c] === node) {
+                    node2.children[c] = undefined
+                  }
+                }
+              }
+
+              for (let il in this.localNodes) {
+                if (this.localNodes[il] === node) {
+                  this.localNodes.splice(il, 1)
+                }
+              }
+
+              if (node.parents === 0) {
+                for (let io in this.orphanedNodes) {
+                  if (this.orphanedNodes[io] === node) {
+                    this.orphanedNodes.splice(io, 1)
+                  }
+                }
+              }
+            }
+          }
+
+          this.$emit('actionperformed')
+        }
+      }
       this.state = 'idle'
       this.drag = undefined
       this.renderCanvas()
