@@ -3,11 +3,12 @@
 import Vector2 from './Vector2.js'
 
 class PlotNode {
-  constructor (x, y, title, text, color) {
+  constructor (x, y, title, text, color, type) {
     this.location = new Vector2(x, y)
     this.text = text
     this.title = title
     this.color = color
+    this.type = type
 
     this.parents = 0
     this.children = []

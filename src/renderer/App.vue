@@ -2,7 +2,8 @@
   <div id="app">
     <new-project class="dialog"  v-if="dialog === 'new'" v-on:cancel="hideDialogs" v-on:done="newProjectPathSelected"/>
     <project-setup class="dialog" v-if="dialog === 'project-setup'" v-on:done="newProjectConfigured"/>
-    <new-node class="dialog" v-if="dialog === 'new-node'" v-on:done="newNodeCreated" />
+    <new-node class="dialog" v-if="dialog === 'new-node'" v-on:cancel="hideDialogs" v-on:done="newNodeCreated" />
+    <plot-node-editor class="dialog" :node="project.plot.root" v-if="dialog === 'plot-editor'" />
     <div id="veil" v-if="dialog !== 'none'" v-on:click="hideDialogsUser"></div>
     <div v-bind:class="blurclass" id="workspace">
       <div class="r1">
@@ -35,6 +36,7 @@ import TopBar from './components/TopBar.vue'
 import NewProject from './components/dialogs/NewProject.vue'
 import ProjectSetup from './components/dialogs/ProjectSetup.vue'
 import NewNode from './components/dialogs/NewNode.vue'
+import PlotNodeEditor from './components/dialogs/PlotNodeEditor.vue'
 
 import fs from 'fs'
 import { clearTimeout, setTimeout } from 'timers'
@@ -47,7 +49,8 @@ export default {
     TopBar,
     NewProject,
     ProjectSetup,
-    NewNode
+    NewNode,
+    PlotNodeEditor
   },
   data: function () {
     return {
@@ -112,6 +115,7 @@ export default {
           this.statusMessage('Opened successfully', 5)
         }
       }.bind(this))
+      this.showDialog('plot-editor')
     },
     assignProjectClasses: function (project) {
       for (let n in project.plot.orphanedNodes) {

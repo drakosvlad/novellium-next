@@ -13,6 +13,7 @@
     <input type="text" class="form-input" v-model="caption" />
     <div id="bottomDiv">
       <button id="createButton" class="form-button form-button-main bottombutton" v-on:click="done">Create</button>
+      <button id="cancelButton" class="form-button" v-on:click="cancel">Cancel</button>
     </div>
   </div>
 </template>
@@ -44,7 +45,7 @@ export default {
         description = 'Container node'
         color = '#FFAAAB'
       }
-      this.$emit('done', new PlotNode(0, 0, this.caption, description, color))
+      this.$emit('done', new PlotNode(0, 0, this.caption, description, color, this.type))
     }
   }
 }
