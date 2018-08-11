@@ -56,7 +56,7 @@ export default {
   z-index: 15;
   top: 50%;
   left: 50%;
-  margin: -250px 0 0 -200px;
+  margin: -200px 0 0 -250px;
   background: white;
   border-radius: 10px;
   border: 1px solid rgb(124, 124, 124);
