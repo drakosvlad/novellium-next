@@ -49,7 +49,9 @@ export default {
         dragRect: 15,
         titlePosition: new Vector2(5, 37),
         textPosition: new Vector2(5, 58),
-        fontSize: 17
+        uiPosition: new Vector2(5, 84),
+        fontSize: 17,
+        uiFontSize: 14
       },
       ctrlPressed: false
     }
@@ -125,6 +127,11 @@ export default {
     },
     renderNode: function (node) {
       this.localNodes.push(node)
+
+      if (node.ui !== undefined) {
+        node.height = this.nodeDimensions.height + node.ui.length * 24 + 5
+      }
+
       let canvasCoords = node.location.multiplyScalar(this.scale / 100).add(this.scroll)
 
       this.ctx.fillStyle = this.themes[this.selectedTheme].nodeBackground
@@ -143,6 +150,37 @@ export default {
       this.ctx.fillStyle = this.themes[this.selectedTheme].nodeText
       this.ctx.font = fontSize + 'px sans-serif'
       this.ctx.fillText(node.text, textCoords.x, textCoords.y)
+
+      if (node.ui !== undefined) {
+        let uiFontSize = this.nodeDimensions.uiFontSize * this.scale / 100
+        let uiPosition = this.nodeDimensions.uiPosition.y
+        for (let i in node.ui) {
+          let textCoords = canvasCoords.add((new Vector2(10, uiPosition)).multiplyScalar(this.scale / 100))
+          this.ctx.fillStyle = this.themes[this.selectedTheme].nodeText
+          this.ctx.font = uiFontSize + 'px sans-serif'
+          this.ctx.fillText(node.ui[i].caption, textCoords.x, textCoords.y)
+
+          switch (node.ui[i].type) {
+            case 'combobox':
+              this.ctx.fillStyle = '#ffffff'
+              this.ctx.fillRect(textCoords.x - 10 * this.scale / 100 + this.nodeDimensions.width / 2 * this.scale / 100, textCoords.y - 14 * this.scale / 100, (this.nodeDimensions.width / 2 - 5) * this.scale / 100, 20 * this.scale / 100)
+              this.ctx.fillStyle = '#777777'
+              this.ctx.beginPath()
+              this.ctx.moveTo(textCoords.x - 20 * this.scale / 100 + this.nodeDimensions.width * this.scale / 100, textCoords.y - 8 * this.scale / 100)
+              this.ctx.lineTo(textCoords.x - 30 * this.scale / 100 + this.nodeDimensions.width * this.scale / 100, textCoords.y - 8 * this.scale / 100)
+              this.ctx.lineTo(textCoords.x - 25 * this.scale / 100 + this.nodeDimensions.width * this.scale / 100, textCoords.y)
+              this.ctx.fill()
+
+              this.ctx.fillRect(canvasCoords.x + 1, textCoords.y - 12 * this.scale / 100, 3 * this.scale / 100, 14 * this.scale / 100)
+
+              this.ctx.fillStyle = this.themes[this.selectedTheme].nodeText
+              this.ctx.font = uiFontSize + 'px sans-serif'
+              this.ctx.fillText(node.ui[i].selecteditem, textCoords.x + this.nodeDimensions.width / 2 * this.scale / 100, textCoords.y)
+          }
+
+          uiPosition += 24
+        }
+      }
 
       if (node.outputs > 0) {
         let shift = this.nodeDimensions.width / (node.outputs)
