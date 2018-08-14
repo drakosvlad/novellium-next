@@ -57,50 +57,6 @@ export default {
         {
           'text': 'Stop music',
           'event': 'stop-music'
-        },
-        {
-          'text': 'Show character',
-          'event': 'show-character'
-        },
-        {
-          'text': 'Move character',
-          'event': 'move-character'
-        },
-        {
-          'text': 'Hide character',
-          'event': 'hide-character'
-        },
-        {
-          'text': 'Say phrase',
-          'event': 'say-phrase'
-        },
-        {
-          'text': 'Dialog',
-          'event': 'dialog'
-        },
-        {
-          'text': 'Check condition (if)',
-          'event': 'if'
-        },
-        {
-          'text': 'Show background',
-          'event': 'background'
-        },
-        {
-          'text': 'Hide UI',
-          'event': 'hide-ui'
-        },
-        {
-          'text': 'Show UI',
-          'event': 'show-ui'
-        },
-        {
-          'text': 'Play music',
-          'event': 'play-music'
-        },
-        {
-          'text': 'Stop music',
-          'event': 'stop-music'
         }
       ]
     }
@@ -133,8 +89,9 @@ h2 {
   margin-left: 5px;
 }
 
-.col1 {
-  overflow: scroll;
+.btnlist {
+  overflow-y: scroll;
+  height: calc(100vh - 80px);
 }
 
 </style>
