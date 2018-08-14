@@ -9,6 +9,14 @@ class PlotNode {
     this.title = title
     this.color = color
     this.type = type
+    this.ui = [
+      {
+        type: 'combobox',
+        caption: 'Test',
+        items: ['Lol', 'Kek', 'Cheburek']
+      }
+    ]
+    this.height = 85
 
     this.parents = 0
     this.children = []

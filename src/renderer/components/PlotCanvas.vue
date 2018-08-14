@@ -128,7 +128,7 @@ export default {
       let canvasCoords = node.location.multiplyScalar(this.scale / 100).add(this.scroll)
 
       this.ctx.fillStyle = this.themes[this.selectedTheme].nodeBackground
-      this.ctx.fillRect(canvasCoords.x, canvasCoords.y, this.nodeDimensions.width * this.scale / 100, this.nodeDimensions.height * this.scale / 100)
+      this.ctx.fillRect(canvasCoords.x, canvasCoords.y, this.nodeDimensions.width * this.scale / 100, node.height * this.scale / 100)
 
       this.ctx.fillStyle = node.color
       this.ctx.fillRect(canvasCoords.x, canvasCoords.y, this.nodeDimensions.width * this.scale / 100, this.nodeDimensions.dragRect * this.scale / 100)
@@ -147,7 +147,7 @@ export default {
       if (node.outputs > 0) {
         let shift = this.nodeDimensions.width / (node.outputs)
         this.ctx.fillStyle = this.themes[this.selectedTheme].outputText
-        let outputCoords = canvasCoords.add(new Vector2(shift / 2, 80).multiplyScalar(this.scale / 100))
+        let outputCoords = canvasCoords.add(new Vector2(shift / 2, node.height - 5).multiplyScalar(this.scale / 100))
         for (let i = 0; i < node.outputs; i++) {
           let textWidth = this.ctx.measureText((i + 1) + '').width
           this.ctx.fillText((i + 1) + '', outputCoords.x - textWidth / 2, outputCoords.y)
@@ -161,7 +161,7 @@ export default {
           continue
         }
 
-        let outRelative = new Vector2(this.nodeDimensions.width / node.outputs / 2 + i * this.nodeDimensions.width / node.outputs, this.nodeDimensions.height)
+        let outRelative = new Vector2(this.nodeDimensions.width / node.outputs / 2 + i * this.nodeDimensions.width / node.outputs, node.height)
         let outCoord = node.location.add(outRelative)
         if (!(this.state === 'draggingArrow' && this.drag.node === node && this.drag.output === Number(i))) {
           this.renderArrow(outCoord, child.location.add(new Vector2(this.nodeDimensions.width / 2, 0)), true)
@@ -193,14 +193,14 @@ export default {
       for (let i in this.localNodes) {
         let node = this.localNodes[i]
         let nodeCoords = node.location
-        let diff = clickCoord.substract(nodeCoords).multiplyScalar(100 / this.scale)
+        let diff = clickCoord.substract(nodeCoords)
 
         if (diff.x >= 0 && diff.x <= 200 && diff.y >= 0 && diff.y <= 15) {
           this.drag = { node: node, diff: diff.multiplyScalar(this.scale / 100) }
           this.state = 'dragging'
         }
 
-        if (diff.x >= 0 && diff.x <= 200 && diff.y >= 63 && diff.y <= 85 && node.outputs > 0) {
+        if (diff.x >= 0 && diff.x <= 200 && diff.y >= node.height - 22 && diff.y <= node.height && node.outputs > 0) {
           let outputShift = this.nodeDimensions.width / node.outputs
           let output = Math.floor(diff.x / outputShift)
           this.drag = { node: node, output: output }
@@ -218,7 +218,7 @@ export default {
       if (this.state === 'draggingArrow') {
         let node = this.drag.node
         let clickCoord = this.coordsToCanvas(e.clientX, e.clientY).substract(this.scroll).multiplyScalar(100 / this.scale)
-        let outRelative = new Vector2(this.nodeDimensions.width / node.outputs / 2 + this.drag.output * this.nodeDimensions.width / node.outputs, this.nodeDimensions.height)
+        let outRelative = new Vector2(this.nodeDimensions.width / node.outputs / 2 + this.drag.output * this.nodeDimensions.width / node.outputs, node.height)
         let outCoord = node.location.add(outRelative)
         this.renderCanvas()
         this.renderArrow(outCoord, clickCoord, false)
@@ -268,7 +268,7 @@ export default {
             let nodeCoords = node.location
             let diff = clickCoord.substract(nodeCoords).multiplyScalar(100 / this.scale)
 
-            if (diff.x >= 0 && diff.x <= 200 && diff.y >= 0 && diff.y <= 85) {
+            if (diff.x >= 0 && diff.x <= 200 && diff.y >= 0 && diff.y <= node.height) {
               node.children.forEach(function (el) {
                 this.unlink(node, el)
               }.bind(this))

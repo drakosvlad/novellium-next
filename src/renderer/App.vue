@@ -11,7 +11,9 @@
       </div>
       <table cellspacing="0">
         <tr class="r2">
-          <td class="col1"></td>
+          <td class="col1">
+            <buttons-list title="Plot elements"></buttons-list>
+          </td>
           <td class="col2">
           <PlotCanvas id="canvas" :plot="project.plot" :newnode="newnode" :action="canvasAction" v-on:actionperformed="canvasActionPerformed" v-on:newnodeplaced="newNodePlaced"/>
           </td>
@@ -32,6 +34,7 @@ import Vector2 from './classes/Vector2.js'
 
 import PlotCanvas from './components/PlotCanvas.vue'
 import TopBar from './components/TopBar.vue'
+import ButtonsList from './components/ButtonsList.vue'
 
 import NewProject from './components/dialogs/NewProject.vue'
 import ProjectSetup from './components/dialogs/ProjectSetup.vue'
@@ -50,7 +53,8 @@ export default {
     NewProject,
     ProjectSetup,
     NewNode,
-    PlotNodeEditor
+    PlotNodeEditor,
+    ButtonsList
   },
   data: function () {
     return {
